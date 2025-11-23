@@ -12,6 +12,7 @@ const TEXTURE_NIGHT = '/textures/earth_night.jpg';
 let scene, camera, renderer, globeMesh, controls;
 let uiStateRef = { rotationSpeed: 0.002 }; // Default fallback
 let onTickCallback = null;
+const markers = []; // Store markers to toggle visibility
 
 // --- Custom Shader ---
 // We use a custom shader to blend textures based on lighting direction.
@@ -163,6 +164,7 @@ function addMarker(lat, lon, text) {
     marker.position.multiplyScalar(1.01);
 
     globeMesh.add(marker);
+    markers.push(marker);
 }
 
 function addStars() {
@@ -209,6 +211,14 @@ export function animate() {
         // At 50 (farthest), speed ~ 1.0
         const dist = camera.position.distanceTo(controls.target);
         controls.rotateSpeed = dist * 0.02;
+
+        // Toggle marker visibility based on distance
+        // Visible only when at minimum zoom (distance ~ 5)
+        // We use a small epsilon because floating point might not be exactly 5
+        const markersVisible = dist < 5.2;
+        markers.forEach(marker => {
+            marker.visible = markersVisible;
+        });
     }
 
     if (globeMesh) {
