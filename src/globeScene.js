@@ -78,6 +78,7 @@ export async function initScene(uiState) {
     controls.enablePan = false; // Keep camera centered on globe
     controls.minDistance = 5; // Prevent zooming inside the globe
     controls.maxDistance = 50; // Prevent zooming too far out
+    controls.rotateSpeed = 0.5; // General sensitivity
 
     // 2. Load Textures
     const textureLoader = new THREE.TextureLoader();
@@ -140,6 +141,12 @@ export function animate() {
 
     if (controls) {
         controls.update();
+        // Adaptive rotation speed: slower when closer
+        // Distance ranges from 5 to 50.
+        // At 5 (closest), speed ~ 0.1
+        // At 50 (farthest), speed ~ 1.0
+        const dist = camera.position.distanceTo(controls.target);
+        controls.rotateSpeed = dist * 0.02;
     }
 
     if (globeMesh) {
