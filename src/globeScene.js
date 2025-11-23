@@ -120,8 +120,20 @@ function addStars() {
     const count = 2000;
     const posArray = new Float32Array(count * 3);
 
-    for (let i = 0; i < count * 3; i++) {
-        posArray[i] = (Math.random() - 0.5) * 100; // Spread stars far out
+    for (let i = 0; i < count; i++) {
+        // Generate stars in a spherical shell far away
+        // Camera maxDistance is 50, so we start at 60 to be safe
+        const r = 60 + Math.random() * 140; // Radius between 60 and 200
+        const theta = 2 * Math.PI * Math.random();
+        const phi = Math.acos(2 * Math.random() - 1);
+
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.sin(phi) * Math.sin(theta);
+        const z = r * Math.cos(phi);
+
+        posArray[i * 3] = x;
+        posArray[i * 3 + 1] = y;
+        posArray[i * 3 + 2] = z;
     }
 
     starGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
