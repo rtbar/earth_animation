@@ -57,10 +57,10 @@ const fragmentShader = `
 `;
 
 export async function initScene(uiState, onTick) {
-  uiStateRef = uiState;
-  onTickCallback = onTick;
+    uiStateRef = uiState;
+    onTickCallback = onTick;
 
-  // 1. Setup Basic Components
+    // 1. Setup Basic Components
     scene = new THREE.Scene();
 
     // Camera setup
@@ -177,15 +177,15 @@ export function animate() {
         // Formula: Time = (RotationY * 12/PI + Offset) % 24
         // 7 = (-PI/4 * 12/PI + Offset)
         // 7 = -3 + Offset => Offset = 10
-        
+
         const hoursPerRadian = 12 / Math.PI;
         const offset = 10;
-        
+
         // Normalize rotation to 0..2PI equivalent for time calculation
         // We use modulo logic on the hours directly
         let rawHours = (globeMesh.rotation.y * hoursPerRadian + offset) % 24;
         if (rawHours < 0) rawHours += 24;
-        
+
         const hours = Math.floor(rawHours);
         const minutes = Math.floor((rawHours - hours) * 60);
 

@@ -11,16 +11,16 @@ export function initUI() {
     };
 
     // Update state when slider changes
-  slider.addEventListener('input', (e) => {
-    state.rotationSpeed = parseFloat(e.target.value);
-  });
+    slider.addEventListener('input', (e) => {
+        state.rotationSpeed = parseFloat(e.target.value);
+    });
 
-  return state;
+    return state;
 }
 
 export function updateClock(hours, minutes) {
-  const clock = document.getElementById('clock');
-  const h = String(Math.floor(hours)).padStart(2, '0');
-  const m = String(Math.floor(minutes)).padStart(2, '0');
-  clock.textContent = `${h}:${m}`;
+    const clock = document.getElementById('clock');
+    const h = String(Math.floor(hours)).padStart(2, '0');
+    const m = String(Math.floor(minutes)).padStart(2, '0');
+    clock.textContent = `${h}:${m}`;
 }
