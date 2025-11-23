@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // --- Configuration ---
 // Fallback textures in case local files are missing.
@@ -8,7 +9,7 @@ const TEXTURE_NIGHT = '/textures/earth_night.jpg';
 // const TEXTURE_DAY = 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Earth_map_1024x512_%28equirectangular_projection%29.jpg';
 // const TEXTURE_NIGHT = 'https://upload.wikimedia.org/wikipedia/commons/b/ba/The_earth_at_night.jpg';
 
-let scene, camera, renderer, globeMesh;
+let scene, camera, renderer, globeMesh, controls;
 let uiStateRef = { rotationSpeed: 0.002 }; // Default fallback
 
 // --- Custom Shader ---
@@ -70,6 +71,14 @@ export async function initScene(uiState) {
     renderer.setPixelRatio(window.devicePixelRatio);
     document.body.appendChild(renderer.domElement);
 
+    // Controls setup
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; // Smooth camera movement
+    controls.dampingFactor = 0.05;
+    controls.enablePan = false; // Keep camera centered on globe
+    controls.minDistance = 5; // Prevent zooming inside the globe
+    controls.maxDistance = 50; // Prevent zooming too far out
+
     // 2. Load Textures
     const textureLoader = new THREE.TextureLoader();
 
@@ -128,6 +137,10 @@ function onWindowResize() {
 
 export function animate() {
     requestAnimationFrame(animate);
+
+    if (controls) {
+        controls.update();
+    }
 
     if (globeMesh) {
         // Apply rotation from UI state
