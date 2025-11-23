@@ -113,6 +113,12 @@ export async function initScene(uiState, onTick) {
     // Add Spain Marker (Lat: 40.4N, Lon: 3.7W)
     addMarker(40.4168, -3.7038, "2");
 
+    // Add Turkey Marker (Lat: 39.9N, Lon: 32.9E)
+    addMarker(39.9334, 32.8597, "1");
+
+    // Add North Pole Marker (Lat: 90N)
+    addMarker(90.0, 0.0, "1");
+
     // Optional: Add a stars background
     addStars();
 
@@ -147,7 +153,7 @@ function addMarker(lat, lon, text) {
         side: THREE.DoubleSide
     });
 
-    const geometry = new THREE.PlaneGeometry(0.4, 0.4);
+    const geometry = new THREE.PlaneGeometry(0.2, 0.2);
     const marker = new THREE.Mesh(geometry, material);
 
     marker.position.set(x, y, z);
