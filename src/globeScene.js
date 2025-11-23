@@ -11,6 +11,7 @@ const TEXTURE_NIGHT = '/textures/earth_night.jpg';
 
 let scene, camera, renderer, globeMesh, controls;
 let uiStateRef = { rotationSpeed: 0.002 }; // Default fallback
+let onTickCallback = null;
 
 // --- Custom Shader ---
 // We use a custom shader to blend textures based on lighting direction.
@@ -55,10 +56,11 @@ const fragmentShader = `
   }
 `;
 
-export async function initScene(uiState) {
-    uiStateRef = uiState;
+export async function initScene(uiState, onTick) {
+  uiStateRef = uiState;
+  onTickCallback = onTick;
 
-    // 1. Setup Basic Components
+  // 1. Setup Basic Components
     scene = new THREE.Scene();
 
     // Camera setup
@@ -164,6 +166,32 @@ export function animate() {
     if (globeMesh) {
         // Apply rotation from UI state
         globeMesh.rotation.y += uiStateRef.rotationSpeed;
+
+        // Calculate Time
+        // One full rotation (2*PI) = 24 hours
+        // Offset calculation:
+        // Sun is at (1, 0.5, 1) -> Angle in XZ plane is PI/4 (45 deg)
+        // Sunrise happens when surface normal is perpendicular to sun direction (-90 deg relative to sun)
+        // So sunrise angle is PI/4 - PI/2 = -PI/4 (-45 deg)
+        // We want this angle (-PI/4) to correspond to 07:00
+        // Formula: Time = (RotationY * 12/PI + Offset) % 24
+        // 7 = (-PI/4 * 12/PI + Offset)
+        // 7 = -3 + Offset => Offset = 10
+        
+        const hoursPerRadian = 12 / Math.PI;
+        const offset = 10;
+        
+        // Normalize rotation to 0..2PI equivalent for time calculation
+        // We use modulo logic on the hours directly
+        let rawHours = (globeMesh.rotation.y * hoursPerRadian + offset) % 24;
+        if (rawHours < 0) rawHours += 24;
+        
+        const hours = Math.floor(rawHours);
+        const minutes = Math.floor((rawHours - hours) * 60);
+
+        if (onTickCallback) {
+            onTickCallback({ hours, minutes });
+        }
     }
 
     renderer.render(scene, camera);
