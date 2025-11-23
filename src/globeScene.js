@@ -110,11 +110,53 @@ export async function initScene(uiState, onTick) {
     globeMesh = new THREE.Mesh(geometry, material);
     scene.add(globeMesh);
 
+    // Add Spain Marker (Lat: 40.4N, Lon: 3.7W)
+    addMarker(40.4168, -3.7038, "2");
+
     // Optional: Add a stars background
     addStars();
 
     // 4. Handle Window Resize
     window.addEventListener('resize', onWindowResize, false);
+}
+
+function addMarker(lat, lon, text) {
+    const radius = 4;
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lon + 180) * (Math.PI / 180);
+
+    const x = -radius * Math.sin(phi) * Math.cos(theta);
+    const y = radius * Math.cos(phi);
+    const z = radius * Math.sin(phi) * Math.sin(theta);
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 128;
+    canvas.height = 128;
+
+    ctx.font = 'bold 100px Arial';
+    ctx.fillStyle = 'red';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 64, 64);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide
+    });
+
+    const geometry = new THREE.PlaneGeometry(0.4, 0.4);
+    const marker = new THREE.Mesh(geometry, material);
+
+    marker.position.set(x, y, z);
+    // Orient the marker to face away from the center of the globe
+    marker.lookAt(new THREE.Vector3(x * 2, y * 2, z * 2));
+    // Push it out slightly to avoid z-fighting
+    marker.position.multiplyScalar(1.01);
+
+    globeMesh.add(marker);
 }
 
 function addStars() {
