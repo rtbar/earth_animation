@@ -3,8 +3,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // --- Configuration ---
 // Fallback textures in case local files are missing.
-const TEXTURE_DAY = '/textures/earth_day.jpg';
-const TEXTURE_NIGHT = '/textures/earth_night.jpg';
+const TEXTURE_DAY = 'textures/earth_day.jpg';
+const TEXTURE_NIGHT = 'textures/earth_night.jpg';
 // Use these online URLs if you don't have local files setup yet:
 // const TEXTURE_DAY = 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Earth_map_1024x512_%28equirectangular_projection%29.jpg';
 // const TEXTURE_NIGHT = 'https://upload.wikimedia.org/wikipedia/commons/b/ba/The_earth_at_night.jpg';
