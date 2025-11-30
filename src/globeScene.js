@@ -112,13 +112,13 @@ export async function initScene(uiState, onTick) {
     scene.add(globeMesh);
 
     // Add Spain Marker (Lat: 40.4N, Lon: 3.7W)
-    addMarker(40.4168, -3.7038, "2");
+    addMarker(40.4168, -3.7038, "1");
 
     // Add Turkey Marker (Lat: 39.9N, Lon: 32.9E)
-    addMarker(39.9334, 32.8597, "1");
+    addMarker(39.9334, 32.8597, "2");
 
     // Add North Pole Marker (Lat: 90N)
-    addMarker(90.0, 0.0, "1");
+    addMarker(90.0, 0.0, "5");
 
     // Optional: Add a stars background
     addStars();
