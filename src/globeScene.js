@@ -10,7 +10,8 @@ const TEXTURE_NIGHT = 'textures/earth_night.jpg';
 // const TEXTURE_NIGHT = 'https://upload.wikimedia.org/wikipedia/commons/b/ba/The_earth_at_night.jpg';
 
 let scene, camera, renderer, globeMesh, controls;
-let uiStateRef = { rotationSpeed: 0.00005 }; // Default fallback (50% slower)
+// let uiStateRef = { rotationSpeed: 0.001 }; // Removed dependency on UI state
+const ROTATION_SPEED = 0.001; // Fixed rotation speed set here exclusively
 let onTickCallback = null;
 const markers = []; // Store markers to toggle visibility
 
@@ -58,7 +59,7 @@ const fragmentShader = `
 `;
 
 export async function initScene(uiState, onTick) {
-    uiStateRef = uiState;
+    // uiStateRef = uiState; // Ignored, using local constant
     onTickCallback = onTick;
 
     // 1. Setup Basic Components
@@ -222,8 +223,8 @@ export function animate() {
     }
 
     if (globeMesh) {
-        // Apply rotation from UI state
-        globeMesh.rotation.y += uiStateRef.rotationSpeed;
+        // Apply rotation from local constant
+        globeMesh.rotation.y += ROTATION_SPEED;
 
         // Calculate Time
         // One full rotation (2*PI) = 24 hours
