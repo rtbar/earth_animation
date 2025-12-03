@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Globe Day/Night Cycle</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: sans-serif;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #ui-container {
+            display: none;
+            /* Hidden as requested */
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        input[type=range] {
+            cursor: pointer;
+            width: 200px;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            color: #ccc;
+        }
+
+        #clock {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            font-family: monospace;
+            color: #4fd1c5;
+        }
+    </style>
+  <script type="module" crossorigin src="/earth_animation/assets/index-BOte66rg.js"></script>
+</head>
+
+<body>
+    <div id="ui-container">
+        <label for="speed-slider">Rotation Speed</label>
+        <input type="range" id="speed-slider" min="-0.02" max="0.02" step="0.001" value="0.001" list="speed-ticks">
+        <datalist id="speed-ticks">
+            <option value="-0.02"></option>
+            <option value="-0.018"></option>
+            <option value="-0.016"></option>
+            <option value="-0.014"></option>
+            <option value="-0.012"></option>
+            <option value="-0.010"></option>
+            <option value="-0.008"></option>
+            <option value="-0.006"></option>
+            <option value="-0.004"></option>
+            <option value="-0.002"></option>
+            <option value="0"></option>
+            <option value="0.002"></option>
+            <option value="0.004"></option>
+            <option value="0.006"></option>
+            <option value="0.008"></option>
+            <option value="0.010"></option>
+            <option value="0.012"></option>
+            <option value="0.014"></option>
+            <option value="0.016"></option>
+            <option value="0.018"></option>
+            <option value="0.02"></option>
+        </datalist>
+        <div class="slider-labels">
+            <span>Min</span>
+            <span>0</span>
+            <span>Max</span>
+        </div>
+        <div id="clock">00:00</div>
+    </div>
+</body>
+
+</html>
