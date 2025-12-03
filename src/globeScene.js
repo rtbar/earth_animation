@@ -10,7 +10,7 @@ const TEXTURE_NIGHT = 'textures/earth_night.jpg';
 // const TEXTURE_NIGHT = 'https://upload.wikimedia.org/wikipedia/commons/b/ba/The_earth_at_night.jpg';
 
 let scene, camera, renderer, globeMesh, controls;
-let uiStateRef = { rotationSpeed: 0.002 }; // Default fallback
+let uiStateRef = { rotationSpeed: 0.00005 }; // Default fallback (50% slower)
 let onTickCallback = null;
 const markers = []; // Store markers to toggle visibility
 
@@ -115,10 +115,10 @@ export async function initScene(uiState, onTick) {
     addMarker(40.4168, -3.7038, "1");
 
     // Add Turkey Marker (Lat: 39.9N, Lon: 32.9E)
-    addMarker(39.9334, 32.8597, "2");
+    addMarker(39.9334, 32.8597, "5");
 
     // Add North Pole Marker (Lat: 90N)
-    addMarker(90.0, 0.0, "5");
+    addMarker(90.0, 0.0, "2");
 
     // Optional: Add a stars background
     addStars();
@@ -213,9 +213,9 @@ export function animate() {
         controls.rotateSpeed = dist * 0.02;
 
         // Toggle marker visibility based on distance
-        // Visible only when at minimum zoom (distance ~ 5)
-        // We use a small epsilon because floating point might not be exactly 5
-        const markersVisible = dist < 5.2;
+        // Visible when at 90% of closest zoom (distance ~ 9.5)
+        // Min dist 5, Max dist 50. 90% zoom = 5 + (45 * 0.1) = 9.5
+        const markersVisible = dist < 6;
         markers.forEach(marker => {
             marker.visible = markersVisible;
         });
