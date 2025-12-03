@@ -3,15 +3,17 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // --- Configuration ---
 // Fallback textures in case local files are missing.
-const TEXTURE_DAY = '/textures/earth_day.jpg';
-const TEXTURE_NIGHT = '/textures/earth_night.jpg';
+const TEXTURE_DAY = 'textures/earth_day.jpg';
+const TEXTURE_NIGHT = 'textures/earth_night.jpg';
 // Use these online URLs if you don't have local files setup yet:
 // const TEXTURE_DAY = 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Earth_map_1024x512_%28equirectangular_projection%29.jpg';
 // const TEXTURE_NIGHT = 'https://upload.wikimedia.org/wikipedia/commons/b/ba/The_earth_at_night.jpg';
 
 let scene, camera, renderer, globeMesh, controls;
-let uiStateRef = { rotationSpeed: 0.002 }; // Default fallback
+// let uiStateRef = { rotationSpeed: 0.001 }; // Removed dependency on UI state
+const ROTATION_SPEED = 0.0005; // Fixed rotation speed set here exclusively
 let onTickCallback = null;
+const markers = []; // Store markers to toggle visibility
 
 // --- Custom Shader ---
 // We use a custom shader to blend textures based on lighting direction.
@@ -57,7 +59,7 @@ const fragmentShader = `
 `;
 
 export async function initScene(uiState, onTick) {
-    uiStateRef = uiState;
+    // uiStateRef = uiState; // Ignored, using local constant
     onTickCallback = onTick;
 
     // 1. Setup Basic Components
@@ -65,7 +67,7 @@ export async function initScene(uiState, onTick) {
 
     // Camera setup
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 12); // Move back to see the whole globe
+    camera.position.set(0, 0, 50); // Start maximally zoomed out
 
     // Renderer setup
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -80,7 +82,7 @@ export async function initScene(uiState, onTick) {
     controls.enablePan = false; // Keep camera centered on globe
     controls.minDistance = 5; // Prevent zooming inside the globe
     controls.maxDistance = 50; // Prevent zooming too far out
-    controls.rotateSpeed = 0.5; // General sensitivity
+    controls.rotateSpeed = 0.75; // General sensitivity
 
     // 2. Load Textures
     const textureLoader = new THREE.TextureLoader();
@@ -110,11 +112,60 @@ export async function initScene(uiState, onTick) {
     globeMesh = new THREE.Mesh(geometry, material);
     scene.add(globeMesh);
 
+    // Add Spain Marker (Lat: 40.4N, Lon: 3.7W)
+    addMarker(40.4168, -3.7038, "1");
+
+    // Add Turkey Marker (Lat: 39.9N, Lon: 32.9E)
+    addMarker(39.9334, 32.8597, "5");
+
+    // Add North Pole Marker (Lat: 90N)
+    addMarker(90.0, 0.0, "2");
+
     // Optional: Add a stars background
     addStars();
 
     // 4. Handle Window Resize
     window.addEventListener('resize', onWindowResize, false);
+}
+
+function addMarker(lat, lon, text) {
+    const radius = 4;
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lon + 180) * (Math.PI / 180);
+
+    const x = -radius * Math.sin(phi) * Math.cos(theta);
+    const y = radius * Math.cos(phi);
+    const z = radius * Math.sin(phi) * Math.sin(theta);
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 128;
+    canvas.height = 128;
+
+    ctx.font = 'bold 100px Arial';
+    ctx.fillStyle = 'red';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 64, 64);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide
+    });
+
+    const geometry = new THREE.PlaneGeometry(0.2, 0.2);
+    const marker = new THREE.Mesh(geometry, material);
+
+    marker.position.set(x, y, z);
+    // Orient the marker to face away from the center of the globe
+    marker.lookAt(new THREE.Vector3(x * 2, y * 2, z * 2));
+    // Push it out slightly to avoid z-fighting
+    marker.position.multiplyScalar(1.01);
+
+    globeMesh.add(marker);
+    markers.push(marker);
 }
 
 function addStars() {
@@ -160,12 +211,20 @@ export function animate() {
         // At 5 (closest), speed ~ 0.1
         // At 50 (farthest), speed ~ 1.0
         const dist = camera.position.distanceTo(controls.target);
-        controls.rotateSpeed = dist * 0.02;
+        controls.rotateSpeed = dist * 0.03;
+
+        // Toggle marker visibility based on distance
+        // Visible when at 90% of closest zoom (distance ~ 9.5)
+        // Min dist 5, Max dist 50. 90% zoom = 5 + (45 * 0.1) = 9.5
+        const markersVisible = dist < 6;
+        markers.forEach(marker => {
+            marker.visible = markersVisible;
+        });
     }
 
     if (globeMesh) {
-        // Apply rotation from UI state
-        globeMesh.rotation.y += uiStateRef.rotationSpeed;
+        // Apply rotation from local constant
+        globeMesh.rotation.y += ROTATION_SPEED;
 
         // Calculate Time
         // One full rotation (2*PI) = 24 hours
