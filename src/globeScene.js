@@ -11,7 +11,7 @@ const TEXTURE_NIGHT = 'textures/earth_night.jpg';
 
 let scene, camera, renderer, globeMesh, controls;
 // let uiStateRef = { rotationSpeed: 0.001 }; // Removed dependency on UI state
-const ROTATION_SPEED = 0.001; // Fixed rotation speed set here exclusively
+const ROTATION_SPEED = 0.0005; // Fixed rotation speed set here exclusively
 let onTickCallback = null;
 const markers = []; // Store markers to toggle visibility
 
@@ -67,7 +67,7 @@ export async function initScene(uiState, onTick) {
 
     // Camera setup
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 12); // Move back to see the whole globe
+    camera.position.set(0, 0, 50); // Start maximally zoomed out
 
     // Renderer setup
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -82,7 +82,7 @@ export async function initScene(uiState, onTick) {
     controls.enablePan = false; // Keep camera centered on globe
     controls.minDistance = 5; // Prevent zooming inside the globe
     controls.maxDistance = 50; // Prevent zooming too far out
-    controls.rotateSpeed = 0.5; // General sensitivity
+    controls.rotateSpeed = 0.75; // General sensitivity
 
     // 2. Load Textures
     const textureLoader = new THREE.TextureLoader();
@@ -211,7 +211,7 @@ export function animate() {
         // At 5 (closest), speed ~ 0.1
         // At 50 (farthest), speed ~ 1.0
         const dist = camera.position.distanceTo(controls.target);
-        controls.rotateSpeed = dist * 0.02;
+        controls.rotateSpeed = dist * 0.03;
 
         // Toggle marker visibility based on distance
         // Visible when at 90% of closest zoom (distance ~ 9.5)
